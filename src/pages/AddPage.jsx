@@ -1,4 +1,4 @@
-import React from "react";
+import React, {createRef} from "react";
 import AceEditor from "react-ace";
 import "ace-builds/src-noconflict/mode-html";
 import "ace-builds/src-noconflict/mode-css";
@@ -9,17 +9,30 @@ import "ace-builds/src-noconflict/ext-emmet"
 export class AddPage extends React.Component {
     constructor() {
         super();
+        this.htmlEditor = createRef();
+        this.handleSave = this.handleSave.bind(this);
     }
 
     handleSave(){
-        console.log("УРА КЛИК СРАБОТАЛ!");
+        let formData = new FormData();
+        formData.append('html',this.htmlEditor.current.editor.getValue())
+        fetch("http://0994site.kotegra.beget.tech/addPage",{
+            method: 'POST',
+            body: formData
+        })
+            .then(response=>response.json())
+            .then(result=>console.log(result))
+    }
+
+    componentDidMount() {
+        console.log("Вызвана функция componentDidMount")
     }
 
     render() {
         return<div>
             <nav>
                 <div className="nav nav-tabs" id="nav-tab" role="tablist">
-                    <a className="nav-link active" id="nav-html-tab" data-toggle="tab" href="#npmnav-html" role="tab"
+                    <a className="nav-link active" id="nav-html-tab" data-toggle="tab" href="#nav-html" role="tab"
                        aria-controls="nav-html" aria-selected="true">HTML</a>
                     <a className="nav-link" id="nav-css-tab" data-toggle="tab" href="#nav-css" role="tab"
                        aria-controls="nav-css" aria-selected="false">CSS</a>
@@ -34,6 +47,7 @@ export class AddPage extends React.Component {
                         mode="html"
                         width="100%"
                         theme="vibrant_ink"
+                        ref={this.htmlEditor}
                         setOptions={{
                             fontSize:18,
                             enableEmmet:true
